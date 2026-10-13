@@ -1,0 +1,6 @@
+| `locket.module` | Mở khóa Locket Gold | [Cài vào SR](shadowrocket://install?module=https://raw.githubusercontent.com/vanhytt/locket_pro/main/shadowrocket-modules/locket.module) |
+| `youtube.module` | Chặn quảng cáo YouTube + PiP + Background | [Cài vào SR](shadowrocket://install?module=https://raw.githubusercontent.com/vanhytt/locket_pro/main/shadowrocket-modules/youtube.module) |
+| `spotify.module` | Mở khóa Spotify Premium (một phần) | [Cài vào SR](shadowrocket://install?module=https://raw.githubusercontent.com/vanhytt/locket_pro/main/shadowrocket-modules/spotify.module) |
+| `soundcloud.module` | Mở khóa SoundCloud Go+ | [Cài vào SR](shadowrocket://install?module=https://raw.githubusercontent.com/vanhytt/locket_pro/main/shadowrocket-modules/soundcloud.module) |
+| `duolingo.module` | Mở khóa Super Duolingo | [Cài vào SR](shadowrocket://install?module=https://raw.githubusercontent.com/vanhytt/locket_pro/main/shadowrocket-modules/duolingo.module) |
+| `all-in-one.module` | 🎯 Tổng hợp tất cả | [Cài vào SR](shadowrocket://install?module=https://raw.githubusercontent.com/vanhytt/locket_pro/main/shadowrocket-modules/all-in-one.module) |
