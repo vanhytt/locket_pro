@@ -1,0 +1,40 @@
+import heapq
+
+def uniform_cost_search(graph, start, goal):
+    # Khởi tạo hàng đợi ưu tiên (Priority Queue). 
+    # Mỗi phần tử lưu dưới dạng: (tổng_chi_phí, nút_hiện_tại, đường_đi_đến_hiện_tại)
+    # Hàng đợi tự động sắp xếp sao cho phần tử có tổng_chi_phí nhỏ nhất luôn ở đầu.
+    p_queue = [(0, start, [start])]
+    
+    # Tập hợp lưu các nút đã được "mở rộng" (đã lấy ra khỏi hàng đợi và xét)
+    # Giúp thuật toán không bị lặp vô hạn và tối ưu thời gian chạy.
+    visited = set()
+
+    # Vòng lặp chạy liên tục cho đến khi hàng đợi rỗng
+    while p_queue:
+        # Lấy nút có tổng chi phí thấp nhất hiện tại ra để xét
+        cost, current_node, path = heapq.heappop(p_queue)
+
+        # Nếu nút hiện tại chính là đích, thuật toán dừng lại và trả về kết quả
+        # Vì ta luôn lấy nút có chi phí nhỏ nhất, nên đường đi đầu tiên chạm đích chắc chắn là tối ưu.
+        if current_node == goal:
+            return cost, path
+
+        # Nếu nút này chưa từng được mở rộng trước đó
+        if current_node not in visited:
+            # Đánh dấu nút này đã duyệt xong
+            visited.add(current_node)
+
+            # Xét tất cả các nút láng giềng (neighbor) của nút hiện tại
+            # graph[current_node] trả về danh sách các cặp (láng_giềng, chi_phí_cạnh)
+            for neighbor, edge_cost in graph.get(current_node, []):
+                if neighbor not in visited:
+                    # Tính tổng chi phí mới từ nút gốc đến nút láng giềng này
+                    new_cost = cost + edge_cost
+                    # Tạo đường đi mới bằng cách thêm nút láng giềng vào cuối đường đi hiện tại
+                    new_path = path + [neighbor]
+                    # Đẩy thông tin mới này vào hàng đợi ưu tiên
+                    heapq.heappush(p_queue, (new_cost, neighbor, new_path))
+                    
+    # Trả về chuỗi thông báo nếu duyệt hết đồ thị mà không tìm thấy đường đến đích
+    return float("inf"), "Không tìm thấy đường đi"

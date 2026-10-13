@@ -1,0 +1,43 @@
+#!name=YouTube BlockAd + PiP + Background
+#!desc=Chặn quảng cáo YouTube, bật PiP, phát trong nền
+#!author=Adapted from dhungx
+#!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png
+# ─────────────────────────────────────────────────
+# Cách hoạt động:
+# [Rule]        → Chặn quảng cáo qua UDP (bypass QUIC)
+# [URL Rewrite] → Reject URL quảng cáo & tracking
+# [Script]      → Inject JS vào response YouTube API
+# [MITM]        → Giải mã HTTPS để can thiệp body
+# ─────────────────────────────────────────────────
+
+# ── Chặn YouTube ads qua QUIC/UDP (bypass MITM) ──
+[Rule]
+AND,((DOMAIN-SUFFIX,googlevideo.com), (PROTOCOL,UDP)),REJECT
+AND,((DOMAIN,youtubei.googleapis.com), (PROTOCOL,UDP)),REJECT
+DOMAIN-SUFFIX,ads.youtube.com,REJECT
+DOMAIN-SUFFIX,adservice.google.com,REJECT
+DOMAIN-SUFFIX,doubleclick.net,REJECT
+DOMAIN-SUFFIX,googleads.g.doubleclick.net,REJECT
+
+# ── Reject quảng cáo CDN & tracking qua HTTPS ──
+[URL Rewrite]
+# Xóa tham số giới hạn chất lượng (ctier=L)
+(^https?://[\w-]+\.googlevideo\.com/(?!dclk_video_ads).+?)&ctier=L(&.+?),ctier,(.+) $1$2$3 302
+
+# Reject URL delivery quảng cáo video
+^https?://[\w-]+\.googlevideo\.com/(?!(dclk_video_ads|videoplayback?)).+&oad _ reject-200
+
+# Reject tracking stats
+^https?://(www|s)\.youtube\.com/api/stats/ads _ reject-200
+^https?://(www|s)\.youtube\.com/(pagead|ptracking) _ reject-200
+^https?://s\.youtube\.com/api/stats/qoe\?adcontext _ reject-200
+^https?://(www|s)\.youtube\.com/get_midroll_info _ reject-200
+^https?://(www|s)\.youtube\.com/get_vmap _ reject-200
+
+# ── Script: Modify YouTube API response (bật PiP, background, 4K) ──
+[Script]
+youtube.response = type=http-response, pattern=^https://youtubei\.googleapis\.com/youtubei/v1/(browse|next|player|search|reel/reel_watch_sequence|guide|account/get_setting|get_watch), requires-body=1, max-size=-1, binary-body-mode=1, engine=script, script-path=https://raw.githubusercontent.com/YOU/YOUR-REPO/main/js/youtube/response.js, timeout=60
+
+# ── Giải mã TLS để can thiệp HTTPS ──
+[MITM]
+hostname = %APPEND% redirector*.googlevideo.com, *.googlevideo.com, www.youtube.com, s.youtube.com, youtubei.googleapis.com

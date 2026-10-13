@@ -1,0 +1,139 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║           SHADOWROCKET MODULE — CHEATSHEET TOÀN DIỆN                        ║
+║           (Dựa trên phân tích repo: dhungx/modules-shadowrocket)             ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 1. HEADER METADATA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  #!url=https://raw.githubusercontent.com/.../myapp.module   ← URL tự cập nhật
+  #!name=Tên Module                                           ← Hiển thị trong SR
+  #!desc=Mô tả chức năng                                      ← Bắt buộc
+  #!author=TênTácGiả                                          ← Tùy chọn
+  #!icon=https://example.com/icon.png                         ← Tùy chọn
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 2. [General]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  force-http-engine-hosts = *yourapp.com
+  ↑ Bypass TLS Pinning một phần (dùng cho Duolingo...)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 3. [Rule]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  DOMAIN,ads.app.com,REJECT
+  DOMAIN-SUFFIX,doubleclick.net,REJECT
+  DOMAIN-KEYWORD,tracking,REJECT
+  IP-CIDR,17.0.0.0/8,DIRECT
+  AND,((DOMAIN-SUFFIX,googlevideo.com),(PROTOCOL,UDP)),REJECT
+  
+  Actions: PROXY | DIRECT | REJECT | REJECT-TINYGIF | REJECT-200
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 4. [URL Rewrite]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ^regex _ reject-200         ← 200 rỗng
+  ^regex - reject-dict        ← {} JSON
+  ^regex https://new.url 302  ← Redirect
+  
+  # Xóa query param:
+  (^https?://cdn\.app\.com/.+?)&limit=\d+(&.*) $1$2 302
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 5. [Script] — ĐẦY ĐỦ OPTIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  tag = type=<TYPE>,
+        pattern=<REGEX>,
+        requires-body=<0|1>,
+        binary-body-mode=<0|1>,
+        max-size=<bytes|-1>,
+        timeout=<seconds>,
+        engine=<script>,
+        script-path=<URL>,
+        script-update-interval=<0|seconds>,
+        argument="<JSON string>"
+
+  TYPE:
+    http-request   → Can thiệp trước khi gửi request
+    http-response  → Can thiệp sau khi nhận response
+
+  KEY OPTIONS:
+    requires-body=1           → Đọc/ghi body
+    binary-body-mode=1        → Body dạng binary (protobuf)
+    max-size=-1               → Không giới hạn kích thước
+    max-size=0                → Chỉ đọc header, không đọc body
+    script-update-interval=0  → Không cache, luôn tải mới
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 6. [MITM]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  hostname = %APPEND% api.app.com, *.cdn.com
+  
+  %APPEND%  → Thêm vào danh sách hiện có  ← LUÔN DÙNG CÁI NÀY
+  %INSERT%  → Chèn vào đầu danh sách
+  (không có) → Ghi đè toàn bộ ← NGUY HIỂM!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 7. JS API (Shadowrocket / Surge)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  $request.url              → URL hiện tại
+  $request.method           → HTTP method
+  $request.headers          → Object headers
+  $request.body             → Body string/binary
+  
+  $response.status          → HTTP status code
+  $response.headers         → Object headers
+  $response.body            → Body string/binary
+  
+  $done({})                 → Pass through, không thay đổi
+  $done({ body: "..." })    → Thay body
+  $done({ headers: {...} }) → Thay headers
+  
+  $persistentStore.write("val", "key")
+  $persistentStore.read("key")
+  $notification.post("title", "sub", "body")
+  console.log("debug message")
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 8. PATTERN THỰC TẾ TỪ REPO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Locket   → api.revenuecat.com/*/{receipts|subscribers/*}
+  YouTube  → youtubei.googleapis.com/youtubei/v1/{browse|next|player...}
+  Spotify  → spclient.wg.spotify.com/{bootstrap|user-customization}
+  SoundCloud → api-mobile.soundcloud.com/configuration/ios
+  Duolingo → {ios-api-2|goals-api|ios-api-cf}.duolingo.com/.*users.*
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 9. CHECKLIST KHI TẠO MODULE MỚI
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  □ Xác định API endpoint bằng proxy tool (Charles/mitmproxy/Proxyman)
+  □ Xác định content-type: JSON hay Protobuf (binary)?
+  □ Nếu Protobuf → binary-body-mode=1
+  □ Thêm hostname vào [MITM] với %APPEND%
+  □ Test regex pattern trên regex101.com trước
+  □ Luôn gọi $done() cuối script (kể cả khi lỗi)
+  □ Thêm try/catch trong JS để xử lý lỗi parse
+  □ Escape \/ trong pattern của [Script], KHÔNG escape trong [URL Rewrite]
+  □ Test trên thiết bị thật với Debug logging
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 10. LỖI THƯỜNG GẶP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ❌ Module không hoạt động:
+     → App bật TLS Pinning → thêm force-http-engine-hosts
+     → Pattern regex sai → test lại trên regex101.com
+     → Hostname chưa có trong [MITM]
+     → Script path URL bị lỗi 404
+  
+  ❌ Body rỗng / null:
+     → Thiếu requires-body=1
+     → max-size=0 khi cần đọc body
+     → Response bị nén (gzip) → SR thường tự giải nén
+  
+  ❌ Timeout:
+     → Tăng timeout=60 hoặc timeout=120
+     → Script không gọi $done() → luôn gọi $done()
+  
+  ❌ 304 Not Modified (body rỗng):
+     → Cần xóa ETag/If-None-Match bằng http-request script
+     → Xem pattern deleteHeader.js trong repo Locket

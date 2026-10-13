@@ -1,0 +1,76 @@
+#!url=https://raw.githubusercontent.com/YOU/YOUR-REPO/main/template.module
+#!name=Template Module
+#!desc=Mẫu module đầy đủ - Thay thế các phần [PLACEHOLDER] bằng nội dung thực
+#!author=YourName
+#!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/App.png
+# ─────────────────────────────────────────────────
+# Telegram: https://t.me/yourhandle
+# GitHub  : https://github.com/you/your-repo
+# ─────────────────────────────────────────────────
+
+# ══════════════════════════════════════════════════
+# [General] — Cấu hình engine (tùy chọn)
+# Dùng khi app cần bypass qua HTTP engine để MITM hoạt động
+# ══════════════════════════════════════════════════
+[General]
+# force-http-engine-hosts = *yourapp.com
+# Nếu không cần, xóa section [General] này
+
+# ══════════════════════════════════════════════════
+# [Rule] — Định tuyến / Chặn domain
+# ══════════════════════════════════════════════════
+[Rule]
+# Chặn domain quảng cáo chính xác
+DOMAIN,ads.yourapp.com,REJECT
+
+# Chặn toàn bộ subdomain
+DOMAIN-SUFFIX,adservice.yourapp.com,REJECT
+
+# Chặn domain chứa keyword
+DOMAIN-KEYWORD,tracking,REJECT
+
+# Chặn UDP (tránh QUIC bypass MITM)
+AND,((DOMAIN-SUFFIX,yourapp.com),(PROTOCOL,UDP)),REJECT
+
+# Route app qua proxy
+DOMAIN-SUFFIX,api.yourapp.com,Proxy
+
+# ══════════════════════════════════════════════════
+# [URL Rewrite] — Rewrite / Redirect / Reject URL
+# Cú pháp: <REGEX> <REPLACEMENT|_|-> <ACTION>
+# ACTION: 302 | 307 | reject | reject-200 | reject-dict
+# ══════════════════════════════════════════════════
+[URL Rewrite]
+# Reject: trả về HTTP 200 body rỗng
+^https?://ads\.yourapp\.com/.* _ reject-200
+
+# Reject splash ads khi mở app (trả về {} JSON)
+^https?://api\.yourapp\.com/v1/splash - reject-dict
+
+# Redirect: loại bỏ tham số giới hạn
+(^https?://cdn\.yourapp\.com/.+?)&limit=\d+(&.*) $1$2 302
+
+# ══════════════════════════════════════════════════
+# [Script] — Inject JavaScript
+# type: http-request | http-response
+# Các option: requires-body, binary-body-mode, max-size, timeout, engine, argument
+# ══════════════════════════════════════════════════
+[Script]
+# ~ Xử lý HTTP RESPONSE: Modify JSON body để unlock premium
+unlock_response = type=http-response, pattern=^https:\/\/api\.yourapp\.com\/(bootstrap|config|user), requires-body=1, max-size=-1, timeout=60, script-path=https://raw.githubusercontent.com/YOU/YOUR-REPO/main/js/yourapp/response.js
+
+# ~ Xử lý HTTP REQUEST: Modify / xóa headers
+modify_request = type=http-request, pattern=^https:\/\/api\.yourapp\.com\/.*,  timeout=60, script-path=https://raw.githubusercontent.com/YOU/YOUR-REPO/main/js/yourapp/request.js
+
+# ~ Binary body (Protobuf) — dùng cho Spotify, TikTok...
+# proto_unlock = type=http-response, pattern=^https:\/\/api\.yourapp\.com\/proto, requires-body=1, binary-body-mode=1, max-size=0, script-path=https://raw.githubusercontent.com/YOU/YOUR-REPO/main/js/yourapp/proto.js, script-update-interval=0
+
+# ~ Với argument JSON truyền vào script
+# config_response = type=http-response, pattern=^https:\/\/api\.yourapp\.com\/config, requires-body=1, max-size=-1, engine=script, script-path=https://raw.githubusercontent.com/YOU/YOUR-REPO/main/js/yourapp/config.js, argument="{\"enablePIP\":true,\"blockAds\":true}"
+
+# ══════════════════════════════════════════════════
+# [MITM] — BẮT BUỘC khi dùng Script/Rewrite với HTTPS
+# %APPEND%: thêm vào danh sách hiện có (không ghi đè)
+# ══════════════════════════════════════════════════
+[MITM]
+hostname = %APPEND% api.yourapp.com, cdn.yourapp.com, *.yourapp.com
