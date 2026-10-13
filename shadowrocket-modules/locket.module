@@ -26,13 +26,13 @@ DOMAIN-SUFFIX,locket.camera,PROXY
 [Script]
 # ── HTTP REQUEST: Xóa cache headers để bypass 304 Not Modified ──
 # Áp dụng cho cả RevenueCat VÀ Locket Camera API
-locket-delete-cache = type=http-request, pattern=^https:\/\/(api\.revenuecat\.com\/.+\/(receipts|subscribers)|api\.locketcamera\.com\/), script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/js/locket/deleteHeader.js, timeout=60
+locket-delete-cache = type=http-request, pattern=^https:\/\/(api\.revenuecat\.com\/.+\/(receipts|subscribers)|api\.locketcamera\.com\/), script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/shadowrocket-modules/js/locket/deleteHeader.js, timeout=60
 
 # ── HTTP RESPONSE: Fake subscription Gold cho RevenueCat ──
-locket-revenuecat = type=http-response, pattern=^https:\/\/api\.revenuecat\.com\/.+\/(receipts$|subscribers\/[^/]+$), requires-body=true, max-size=-1, timeout=60, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/js/locket/Locket.js
+locket-revenuecat = type=http-response, pattern=^https:\/\/api\.revenuecat\.com\/.+\/(receipts$|subscribers\/[^/]+$), requires-body=true, max-size=-1, timeout=60, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/shadowrocket-modules/js/locket/Locket.js
 
 # ── HTTP RESPONSE: Fake subscription Gold cho Locket Camera API ──
-locket-camera-api = type=http-response, pattern=^https:\/\/api\.locketcamera\.com\/(user|subscription|config), requires-body=true, max-size=-1, timeout=60, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/js/locket/Locket.js
+locket-camera-api = type=http-response, pattern=^https:\/\/api\.locketcamera\.com\/(user|subscription|config), requires-body=true, max-size=-1, timeout=60, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/shadowrocket-modules/js/locket/Locket.js
 
 # ══════════════════════════════════════════════════
 # [MITM] — Giải mã TLS cho tất cả Locket-related domains

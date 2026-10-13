@@ -1,4 +1,4 @@
-#!url=https://raw.githubusercontent.com/vanhytt/locket_pro/main/all-in-one.module
+#!url=https://raw.githubusercontent.com/vanhytt/locket_pro/main/shadowrocket-modules/all-in-one.module
 #!name=All-In-One Unlock
 #!desc=Tổng hợp: Locket Gold + Spotify Premium + YouTube BlockAd/PiP/Background + SoundCloud Go+
 #!author=vanhytt
@@ -69,28 +69,28 @@ DOMAIN-SUFFIX,locket.camera,PROXY
 # │  LOCKET GOLD — RevenueCat + Locket Camera API   │
 # └─────────────────────────────────────────────────┘
 # HTTP REQUEST: Xóa cache ETag headers → bypass 304 Not Modified
-locket-delete-cache = type=http-request, pattern=^https:\/\/(api\.revenuecat\.com\/.+\/(receipts|subscribers)|api\.locketcamera\.com\/), script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/js/locket/deleteHeader.js, timeout=60
+locket-delete-cache = type=http-request, pattern=^https:\/\/(api\.revenuecat\.com\/.+\/(receipts|subscribers)|api\.locketcamera\.com\/), script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/shadowrocket-modules/js/locket/deleteHeader.js, timeout=60
 
 # HTTP RESPONSE: Fake Gold subscription cho RevenueCat
-locket-revenuecat = type=http-response, pattern=^https:\/\/api\.revenuecat\.com\/.+\/(receipts$|subscribers\/[^/]+$), requires-body=true, max-size=-1, timeout=60, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/js/locket/Locket.js
+locket-revenuecat = type=http-response, pattern=^https:\/\/api\.revenuecat\.com\/.+\/(receipts$|subscribers\/[^/]+$), requires-body=true, max-size=-1, timeout=60, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/shadowrocket-modules/js/locket/Locket.js
 
 # HTTP RESPONSE: Fake Gold subscription cho Locket Camera API
-locket-camera-api = type=http-response, pattern=^https:\/\/api\.locketcamera\.com\/(user|subscription|config), requires-body=true, max-size=-1, timeout=60, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/js/locket/Locket.js
+locket-camera-api = type=http-response, pattern=^https:\/\/api\.locketcamera\.com\/(user|subscription|config), requires-body=true, max-size=-1, timeout=60, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/shadowrocket-modules/js/locket/Locket.js
 
 # ┌─────────────────────────────────────────────────┐
 # │  SPOTIFY PREMIUM — Protobuf Unlock              │
 # └─────────────────────────────────────────────────┘
-spotify-proto = type=http-response, pattern=^https:\/\/spclient\.wg\.spotify\.com\/(bootstrap\/v1\/bootstrap|user-customization-service\/v1\/customize)$, requires-body=1, binary-body-mode=1, max-size=0, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/js/spotify/spotify.js, script-update-interval=0
+spotify-proto = type=http-response, pattern=^https:\/\/spclient\.wg\.spotify\.com\/(bootstrap\/v1\/bootstrap|user-customization-service\/v1\/customize)$, requires-body=1, binary-body-mode=1, max-size=0, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/shadowrocket-modules/js/spotify/spotify.js, script-update-interval=0
 
 # ┌─────────────────────────────────────────────────┐
 # │  YOUTUBE — BlockAd + PiP + Background Play      │
 # └─────────────────────────────────────────────────┘
-youtube.response = type=http-response, pattern=^https://youtubei\.googleapis\.com/youtubei/v1/(browse|next|player|search|reel/reel_watch_sequence|guide|account/get_setting|get_watch), requires-body=1, max-size=-1, binary-body-mode=1, engine=script, timeout=60, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/js/youtube/response.js
+youtube.response = type=http-response, pattern=^https://youtubei\.googleapis\.com/youtubei/v1/(browse|next|player|search|reel/reel_watch_sequence|guide|account/get_setting|get_watch), requires-body=1, max-size=-1, binary-body-mode=1, engine=script, timeout=60, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/shadowrocket-modules/js/youtube/response.js
 
 # ┌─────────────────────────────────────────────────┐
 # │  SOUNDCLOUD GO+ — JSON Config Unlock             │
 # └─────────────────────────────────────────────────┘
-SoundCloudGo-Plus = type=http-response, pattern=^https://api-mobile\.soundcloud\.com/configuration/ios, requires-body=1, max-size=-1, timeout=60, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/js/soundcloud/soundcloud.js
+SoundCloudGo-Plus = type=http-response, pattern=^https://api-mobile\.soundcloud\.com/configuration/ios, requires-body=1, max-size=-1, timeout=60, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/shadowrocket-modules/js/soundcloud/soundcloud.js
 
 # ══════════════════════════════════════════════════
 # [MITM] — Tổng hợp TẤT CẢ hostname cần giải mã TLS
