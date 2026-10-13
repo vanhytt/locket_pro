@@ -3,22 +3,23 @@
 <p align="center">
   <b>📡 Mở khóa tính năng - 🔒 Bảo mật - 🚫 Chặn quảng cáo</b>
   <br>
-  <i>Các module tùy chỉnh Shadowrocket dựa trên cấu trúc từ repo <a href="https://github.com/dhungx/modules-shadowrocket">dhungx/modules-shadowrocket</a></i>
+  <i>Các module tùy chỉnh Shadowrocket cho Locket Gold, Spotify, YouTube, SoundCloud, Duolingo</i>
 </p>
 
 ---
 
 ## 📂 Danh sách Module
 
-| 📜 Module | 📝 Mô tả | 📦 Tải về |
-|-----------|----------|-----------|
-| `locket.module` | Mở khóa Locket Gold | [Raw URL](locket.module) |
-| `youtube.module` | Chặn quảng cáo YouTube + PiP + Background | [Raw URL](youtube.module) |
-| `spotify.module` | Mở khóa Spotify Premium (một phần) | [Raw URL](spotify.module) |
-| `soundcloud.module` | Mở khóa SoundCloud Go+ | [Raw URL](soundcloud.module) |
-| `duolingo.module` | Mở khóa Super Duolingo | [Raw URL](duolingo.module) |
-| `all-in-one.module` | 🎯 Tổng hợp tất cả | [Raw URL](all-in-one.module) |
-| `template.module` | 📋 Template mẫu để tạo module mới | [Raw URL](template.module) |
+| 📜 Module | 📝 Mô tả | 📦 Cài ngay (1 chạm) |
+|-----------|----------|----------------------|
+| `locket.module` | Mở khóa Locket Gold | [Cài vào SR](shadowrocket://install?module=https://raw.githubusercontent.com/vanhytt/locket_pro/main/locket.module) |
+| `youtube.module` | Chặn quảng cáo YouTube + PiP + Background | [Cài vào SR](shadowrocket://install?module=https://raw.githubusercontent.com/vanhytt/locket_pro/main/youtube.module) |
+| `spotify.module` | Mở khóa Spotify Premium (một phần) | [Cài vào SR](shadowrocket://install?module=https://raw.githubusercontent.com/vanhytt/locket_pro/main/spotify.module) |
+| `soundcloud.module` | Mở khóa SoundCloud Go+ | [Cài vào SR](shadowrocket://install?module=https://raw.githubusercontent.com/vanhytt/locket_pro/main/soundcloud.module) |
+| `duolingo.module` | Mở khóa Super Duolingo | [Cài vào SR](shadowrocket://install?module=https://raw.githubusercontent.com/vanhytt/locket_pro/main/duolingo.module) |
+| `all-in-one.module` | 🎯 Tổng hợp tất cả | [Cài vào SR](shadowrocket://install?module=https://raw.githubusercontent.com/vanhytt/locket_pro/main/all-in-one.module) |
+
+> 💡 **Tip:** Nhấn **"Cài vào SR"** trực tiếp trên iPhone để tự động mở Shadowrocket và cài module!
 
 ---
 
@@ -42,9 +43,9 @@ shadowrocket-modules/
     │   ├── Locket.js            ← Unlock Gold (response)
     │   └── deleteHeader.js      ← Clear cache (request)
     ├── youtube/
-    │   └── (dùng script ngoài)
+    │   └── response.js          ← AdBlock + PiP + Background Play
     ├── spotify/
-    │   └── (dùng script ngoài / protobuf)
+    │   └── spotify.js           ← Unlock Premium (protobuf)
     ├── soundcloud/
     │   └── soundcloud.js        ← Unlock Go+
     └── duolingo/
@@ -55,15 +56,14 @@ shadowrocket-modules/
 
 ## 🚀 Cách sử dụng
 
-### Cách 1: Thêm bằng URL
-1. Sao chép **Raw URL** của module
+### Cách 1: Cài 1 chạm (trên iPhone)
+Nhấn vào link **"Cài vào SR"** trong bảng trên → Shadowrocket tự động mở và cài.
+
+### Cách 2: Thêm bằng URL thủ công
+1. Copy Raw URL của module (ví dụ: `https://raw.githubusercontent.com/vanhytt/locket_pro/main/locket.module`)
 2. Mở **Shadowrocket** → **Configuration** → **Module**
 3. Nhấn **+** → Dán URL → Nhấn **OK**
 4. Bật VPN với kiểu kết nối **Cấu Hình**
-
-### Cách 2: Tải trực tiếp
-1. Tải file `.module` về máy
-2. Import vào Shadowrocket
 
 ---
 
@@ -71,3 +71,5 @@ shadowrocket-modules/
 - Chỉ dùng cho mục đích **học tập cá nhân**
 - Một số module có thể không hoạt động nếu app đã update hoặc bật TLS Pinning
 - Luôn **đăng xuất & đăng nhập lại** sau khi cài module
+- Spotify sử dụng thư viện protobuf bundled (~70KB) — toàn bộ code được host trên repo này
+

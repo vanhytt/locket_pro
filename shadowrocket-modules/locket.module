@@ -1,19 +1,41 @@
 #!name=Locket Gold Unlock
-#!desc=Mở khóa Locket Gold — Unlock tất cả tính năng Premium
+#!desc=Mở khóa Locket Gold — Unlock tất cả tính năng Premium (RevenueCat + Locket Camera API)
 #!author=Adapted from dhungx
 #!icon=https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/locket-icon.png
 # ─────────────────────────────────────────────────
 # Cách hoạt động:
-# 1. Chặn cache headers của RevenueCat (http-request) → buộc server trả full response
-# 2. Modify response từ RevenueCat API → fake trạng thái đã mua Gold subscription
+# 1. [Rule]   → Route API RevenueCat + Locket Camera qua Proxy (KHÔNG DIRECT)
+# 2. [Script] → Xóa cache headers (http-request) → buộc server trả full JSON
+# 3. [Script] → Modify response RevenueCat + Locket Camera → fake Gold subscription
 # ─────────────────────────────────────────────────
 
+# ══════════════════════════════════════════════════
+# [Rule] — Đảm bảo API luôn route qua Proxy để MITM hoạt động
+# ⚠️ Nếu để DIRECT, Shadowrocket không thể giải mã TLS → Script sẽ KHÔNG chạy
+# ══════════════════════════════════════════════════
+[Rule]
+# RevenueCat subscription validation — PHẢI qua Proxy
+DOMAIN,api.revenuecat.com,PROXY
+# Locket Camera API — PHẢI qua Proxy
+DOMAIN,api.locketcamera.com,PROXY
+DOMAIN-SUFFIX,locket.camera,PROXY
+
+# ══════════════════════════════════════════════════
+# [Script] — Intercept RevenueCat + Locket Camera API
+# ══════════════════════════════════════════════════
 [Script]
-# Xóa cache headers (ETag, If-None-Match) để bypass 304 Not Modified
-deleteHeader = type=http-request, pattern=^https:\/\/api\.revenuecat\.com\/.+\/(receipts|subscribers), script-path=https://raw.githubusercontent.com/YOU/YOUR-REPO/main/js/locket/deleteHeader.js, timeout=60
+# ── HTTP REQUEST: Xóa cache headers để bypass 304 Not Modified ──
+# Áp dụng cho cả RevenueCat VÀ Locket Camera API
+locket-delete-cache = type=http-request, pattern=^https:\/\/(api\.revenuecat\.com\/.+\/(receipts|subscribers)|api\.locketcamera\.com\/), script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/js/locket/deleteHeader.js, timeout=60
 
-# Modify response body: thêm subscription Gold vào JSON trả về
-revenuecat = type=http-response, pattern=^https:\/\/api\.revenuecat\.com\/.+\/(receipts$|subscribers\/[^/]+$), script-path=https://raw.githubusercontent.com/YOU/YOUR-REPO/main/js/locket/Locket.js, requires-body=true, max-size=-1, timeout=60
+# ── HTTP RESPONSE: Fake subscription Gold cho RevenueCat ──
+locket-revenuecat = type=http-response, pattern=^https:\/\/api\.revenuecat\.com\/.+\/(receipts$|subscribers\/[^/]+$), requires-body=true, max-size=-1, timeout=60, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/js/locket/Locket.js
 
+# ── HTTP RESPONSE: Fake subscription Gold cho Locket Camera API ──
+locket-camera-api = type=http-response, pattern=^https:\/\/api\.locketcamera\.com\/(user|subscription|config), requires-body=true, max-size=-1, timeout=60, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/js/locket/Locket.js
+
+# ══════════════════════════════════════════════════
+# [MITM] — Giải mã TLS cho tất cả Locket-related domains
+# ══════════════════════════════════════════════════
 [MITM]
-hostname = %APPEND% api.revenuecat.com
+hostname = %APPEND% api.revenuecat.com, api.locketcamera.com, *.locket.camera

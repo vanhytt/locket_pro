@@ -1,11 +1,11 @@
-#!url=https://raw.githubusercontent.com/YOU/YOUR-REPO/main/template.module
+#!url=https://raw.githubusercontent.com/vanhytt/locket_pro/main/template.module
 #!name=Template Module
 #!desc=Mẫu module đầy đủ - Thay thế các phần [PLACEHOLDER] bằng nội dung thực
-#!author=YourName
+#!author=vanhytt
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/App.png
 # ─────────────────────────────────────────────────
 # Telegram: https://t.me/yourhandle
-# GitHub  : https://github.com/you/your-repo
+# GitHub  : https://github.com/vanhytt/locket_pro
 # ─────────────────────────────────────────────────
 
 # ══════════════════════════════════════════════════
@@ -57,16 +57,16 @@ DOMAIN-SUFFIX,api.yourapp.com,Proxy
 # ══════════════════════════════════════════════════
 [Script]
 # ~ Xử lý HTTP RESPONSE: Modify JSON body để unlock premium
-unlock_response = type=http-response, pattern=^https:\/\/api\.yourapp\.com\/(bootstrap|config|user), requires-body=1, max-size=-1, timeout=60, script-path=https://raw.githubusercontent.com/YOU/YOUR-REPO/main/js/yourapp/response.js
+unlock_response = type=http-response, pattern=^https:\/\/api\.yourapp\.com\/(bootstrap|config|user), requires-body=1, max-size=-1, timeout=60, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/js/yourapp/response.js
 
 # ~ Xử lý HTTP REQUEST: Modify / xóa headers
-modify_request = type=http-request, pattern=^https:\/\/api\.yourapp\.com\/.*,  timeout=60, script-path=https://raw.githubusercontent.com/YOU/YOUR-REPO/main/js/yourapp/request.js
+modify_request = type=http-request, pattern=^https:\/\/api\.yourapp\.com\/.*,  timeout=60, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/js/yourapp/request.js
 
 # ~ Binary body (Protobuf) — dùng cho Spotify, TikTok...
-# proto_unlock = type=http-response, pattern=^https:\/\/api\.yourapp\.com\/proto, requires-body=1, binary-body-mode=1, max-size=0, script-path=https://raw.githubusercontent.com/YOU/YOUR-REPO/main/js/yourapp/proto.js, script-update-interval=0
+# proto_unlock = type=http-response, pattern=^https:\/\/api\.yourapp\.com\/proto, requires-body=1, binary-body-mode=1, max-size=0, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/js/yourapp/proto.js, script-update-interval=0
 
 # ~ Với argument JSON truyền vào script
-# config_response = type=http-response, pattern=^https:\/\/api\.yourapp\.com\/config, requires-body=1, max-size=-1, engine=script, script-path=https://raw.githubusercontent.com/YOU/YOUR-REPO/main/js/yourapp/config.js, argument="{\"enablePIP\":true,\"blockAds\":true}"
+# config_response = type=http-response, pattern=^https:\/\/api\.yourapp\.com\/config, requires-body=1, max-size=-1, engine=script, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/js/yourapp/config.js, argument="{\"enablePIP\":true,\"blockAds\":true}"
 
 # ══════════════════════════════════════════════════
 # [MITM] — BẮT BUỘC khi dùng Script/Rewrite với HTTPS

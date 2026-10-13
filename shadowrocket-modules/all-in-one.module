@@ -1,59 +1,100 @@
-#!url=https://raw.githubusercontent.com/YOU/YOUR-REPO/main/all-in-one.module
+#!url=https://raw.githubusercontent.com/vanhytt/locket_pro/main/all-in-one.module
 #!name=All-In-One Unlock
-#!desc=Tổng hợp: Locket Gold + Spotify Premium + YouTube BlockAd + PiP + SoundCloud Go+
-#!author=YourName
+#!desc=Tổng hợp: Locket Gold + Spotify Premium + YouTube BlockAd/PiP/Background + SoundCloud Go+
+#!author=vanhytt
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png
 # ─────────────────────────────────────────────────
 # Bao gồm:
-#  ✅ Locket Gold
-#  ✅ Spotify Premium (một phần)
-#  ✅ YouTube: chặn quảng cáo, bật PiP, phát nền, 4K
-#  ✅ SoundCloud Go+
+#  ✅ Locket Gold      — RevenueCat + Locket Camera API unlock
+#  ✅ Spotify Premium   — Protobuf unlock (một phần)
+#  ✅ YouTube           — Full AdBlock + PiP + Background Play + 4K
+#  ✅ SoundCloud Go+    — Offline, HQ audio, no ads
 # ─────────────────────────────────────────────────
 
 # ══════════════════════════════════════════════════
-# MITM — Tổng hợp tất cả hostname cần giải mã TLS
-# ══════════════════════════════════════════════════
-[MITM]
-hostname = %APPEND% api.revenuecat.com, spclient.wg.spotify.com, redirector*.googlevideo.com, *.googlevideo.com, www.youtube.com, s.youtube.com, youtubei.googleapis.com, api-mobile.soundcloud.com
-
-# ══════════════════════════════════════════════════
-# RULE — Chặn quảng cáo YouTube
+# [Rule] — Chặn quảng cáo YouTube + Route Locket API qua Proxy
+# ⚠️ [Rule] PHẢI đặt TRƯỚC [URL Rewrite] và [Script]
 # ══════════════════════════════════════════════════
 [Rule]
-AND,((DOMAIN-SUFFIX,googlevideo.com), (PROTOCOL,UDP)),REJECT
-AND,((DOMAIN,youtubei.googleapis.com), (PROTOCOL,UDP)),REJECT
+# ── YouTube: Chặn QUIC/UDP để buộc về TCP → MITM có thể hoạt động ──
+AND,((DOMAIN-SUFFIX,googlevideo.com),(PROTOCOL,UDP)),REJECT
+AND,((DOMAIN,youtubei.googleapis.com),(PROTOCOL,UDP)),REJECT
+
+# ── YouTube: Chặn ad-serving domains ──
 DOMAIN-SUFFIX,ads.youtube.com,REJECT
 DOMAIN-SUFFIX,adservice.google.com,REJECT
 DOMAIN-SUFFIX,doubleclick.net,REJECT
 DOMAIN-SUFFIX,googleads.g.doubleclick.net,REJECT
 
+# ── YouTube: Bổ sung chặn ad network & syndication ──
+DOMAIN-SUFFIX,googlesyndication.com,REJECT
+DOMAIN-SUFFIX,googleadservices.com,REJECT
+DOMAIN-KEYWORD,youtubeads,REJECT
+
+# ── Locket: Route API qua Proxy để MITM hoạt động ──
+# ⚠️ KHÔNG để DIRECT — Script sẽ không chạy nếu traffic đi trực tiếp
+DOMAIN,api.revenuecat.com,PROXY
+DOMAIN,api.locketcamera.com,PROXY
+DOMAIN-SUFFIX,locket.camera,PROXY
+
 # ══════════════════════════════════════════════════
-# URL REWRITE — Reject tracking / ads URL
+# [URL Rewrite] — Reject quảng cáo YouTube theo regex URL
 # ══════════════════════════════════════════════════
 [URL Rewrite]
+# ── Xóa tham số giới hạn chất lượng video (ctier=L) ──
 (^https?://[\w-]+\.googlevideo\.com/(?!dclk_video_ads).+?)&ctier=L(&.+?),ctier,(.+) $1$2$3 302
+
+# ── Reject CDN delivery quảng cáo video ──
 ^https?://[\w-]+\.googlevideo\.com/(?!(dclk_video_ads|videoplayback?)).+&oad _ reject-200
+
+# ── Reject YouTube tracking stats ──
 ^https?://(www|s)\.youtube\.com/api/stats/ads _ reject-200
 ^https?://(www|s)\.youtube\.com/(pagead|ptracking) _ reject-200
 ^https?://s\.youtube\.com/api/stats/qoe\?adcontext _ reject-200
+
+# ── Reject mid-roll & pre-roll ads ──
 ^https?://(www|s)\.youtube\.com/get_midroll_info _ reject-200
 ^https?://(www|s)\.youtube\.com/get_vmap _ reject-200
 
+# ── Reject ad companion & overlay ──
+^https?://(www|s)\.youtube\.com/api/stats/watchtime\?.*cpn.* _ reject-200
+^https?://www\.youtube\.com/pagead/adview.* _ reject-200
+
 # ══════════════════════════════════════════════════
-# SCRIPT — Tất cả các unlock
+# [Script] — Tất cả các unlock
 # ══════════════════════════════════════════════════
 [Script]
 
-# ── Locket Gold Unlock ──
-deleteHeader = type=http-request, pattern=^https:\/\/api\.revenuecat\.com\/.+\/(receipts|subscribers), timeout=60, script-path=https://raw.githubusercontent.com/YOU/YOUR-REPO/main/js/locket/deleteHeader.js
-revenuecat = type=http-response, pattern=^https:\/\/api\.revenuecat\.com\/.+\/(receipts$|subscribers\/[^/]+$), requires-body=true, max-size=-1, timeout=60, script-path=https://raw.githubusercontent.com/YOU/YOUR-REPO/main/js/locket/Locket.js
+# ┌─────────────────────────────────────────────────┐
+# │  LOCKET GOLD — RevenueCat + Locket Camera API   │
+# └─────────────────────────────────────────────────┘
+# HTTP REQUEST: Xóa cache ETag headers → bypass 304 Not Modified
+locket-delete-cache = type=http-request, pattern=^https:\/\/(api\.revenuecat\.com\/.+\/(receipts|subscribers)|api\.locketcamera\.com\/), script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/js/locket/deleteHeader.js, timeout=60
 
-# ── Spotify Premium Unlock ──
-spotify-proto = type=http-response, pattern=^https:\/\/spclient\.wg\.spotify\.com\/(bootstrap\/v1\/bootstrap|user-customization-service\/v1\/customize)$, requires-body=1, binary-body-mode=1, max-size=0, script-path=https://raw.githubusercontent.com/YOU/YOUR-REPO/main/js/spotify/spotify.js, script-update-interval=0
+# HTTP RESPONSE: Fake Gold subscription cho RevenueCat
+locket-revenuecat = type=http-response, pattern=^https:\/\/api\.revenuecat\.com\/.+\/(receipts$|subscribers\/[^/]+$), requires-body=true, max-size=-1, timeout=60, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/js/locket/Locket.js
 
-# ── YouTube Premium + BlockAd ──
-youtube.response = type=http-response, pattern=^https://youtubei\.googleapis\.com/youtubei/v1/(browse|next|player|search|reel/reel_watch_sequence|guide|account/get_setting|get_watch), requires-body=1, max-size=-1, binary-body-mode=1, engine=script, script-path=https://raw.githubusercontent.com/YOU/YOUR-REPO/main/js/youtube/response.js, timeout=60
+# HTTP RESPONSE: Fake Gold subscription cho Locket Camera API
+locket-camera-api = type=http-response, pattern=^https:\/\/api\.locketcamera\.com\/(user|subscription|config), requires-body=true, max-size=-1, timeout=60, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/js/locket/Locket.js
 
-# ── SoundCloud Go+ Unlock ──
-SoundCloudGo+ = type=http-response, pattern=^https://api-mobile\.soundcloud\.com/configuration/ios, requires-body=1, max-size=-1, timeout=60, script-path=https://raw.githubusercontent.com/YOU/YOUR-REPO/main/js/soundcloud/soundcloud.js
+# ┌─────────────────────────────────────────────────┐
+# │  SPOTIFY PREMIUM — Protobuf Unlock              │
+# └─────────────────────────────────────────────────┘
+spotify-proto = type=http-response, pattern=^https:\/\/spclient\.wg\.spotify\.com\/(bootstrap\/v1\/bootstrap|user-customization-service\/v1\/customize)$, requires-body=1, binary-body-mode=1, max-size=0, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/js/spotify/spotify.js, script-update-interval=0
+
+# ┌─────────────────────────────────────────────────┐
+# │  YOUTUBE — BlockAd + PiP + Background Play      │
+# └─────────────────────────────────────────────────┘
+youtube.response = type=http-response, pattern=^https://youtubei\.googleapis\.com/youtubei/v1/(browse|next|player|search|reel/reel_watch_sequence|guide|account/get_setting|get_watch), requires-body=1, max-size=-1, binary-body-mode=1, engine=script, timeout=60, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/js/youtube/response.js
+
+# ┌─────────────────────────────────────────────────┐
+# │  SOUNDCLOUD GO+ — JSON Config Unlock             │
+# └─────────────────────────────────────────────────┘
+SoundCloudGo-Plus = type=http-response, pattern=^https://api-mobile\.soundcloud\.com/configuration/ios, requires-body=1, max-size=-1, timeout=60, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/js/soundcloud/soundcloud.js
+
+# ══════════════════════════════════════════════════
+# [MITM] — Tổng hợp TẤT CẢ hostname cần giải mã TLS
+# %APPEND% = thêm vào danh sách, KHÔNG ghi đè
+# ══════════════════════════════════════════════════
+[MITM]
+hostname = %APPEND% api.revenuecat.com, api.locketcamera.com, *.locket.camera, spclient.wg.spotify.com, *.youtube.com, youtubei.googleapis.com, *.googlevideo.com, redirector*.googlevideo.com, api-mobile.soundcloud.com
