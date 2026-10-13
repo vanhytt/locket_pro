@@ -12,12 +12,12 @@
 
 | 📜 Module | 📝 Mô tả | 📦 Cài ngay (1 chạm) |
 |-----------|----------|----------------------|
-| `locket.module` | Mở khóa Locket Gold | [Cài vào SR](shadowrocket://install?module=https://raw.githubusercontent.com/vanhytt/locket_pro/main/locket.module) |
-| `youtube.module` | Chặn quảng cáo YouTube + PiP + Background | [Cài vào SR](shadowrocket://install?module=https://raw.githubusercontent.com/vanhytt/locket_pro/main/youtube.module) |
-| `spotify.module` | Mở khóa Spotify Premium (một phần) | [Cài vào SR](shadowrocket://install?module=https://raw.githubusercontent.com/vanhytt/locket_pro/main/spotify.module) |
-| `soundcloud.module` | Mở khóa SoundCloud Go+ | [Cài vào SR](shadowrocket://install?module=https://raw.githubusercontent.com/vanhytt/locket_pro/main/soundcloud.module) |
-| `duolingo.module` | Mở khóa Super Duolingo | [Cài vào SR](shadowrocket://install?module=https://raw.githubusercontent.com/vanhytt/locket_pro/main/duolingo.module) |
-| `all-in-one.module` | 🎯 Tổng hợp tất cả | [Cài vào SR](shadowrocket://install?module=https://raw.githubusercontent.com/vanhytt/locket_pro/main/all-in-one.module) |
+| `locket.module` | Mở khóa Locket Gold | [Cài vào SR](shadowrocket://install?module=https://raw.githubusercontent.com/vanhytt/locket_pro/main/shadowrocket-modules/locket.module) |
+| `youtube.module` | Chặn quảng cáo YouTube + PiP + Background | [Cài vào SR](shadowrocket://install?module=https://raw.githubusercontent.com/vanhytt/locket_pro/main/shadowrocket-modules/youtube.module) |
+| `spotify.module` | Mở khóa Spotify Premium (một phần) | [Cài vào SR](shadowrocket://install?module=https://raw.githubusercontent.com/vanhytt/locket_pro/main/shadowrocket-modules/spotify.module) |
+| `soundcloud.module` | Mở khóa SoundCloud Go+ | [Cài vào SR](shadowrocket://install?module=https://raw.githubusercontent.com/vanhytt/locket_pro/main/shadowrocket-modules/soundcloud.module) |
+| `duolingo.module` | Mở khóa Super Duolingo | [Cài vào SR](shadowrocket://install?module=https://raw.githubusercontent.com/vanhytt/locket_pro/main/shadowrocket-modules/duolingo.module) |
+| `all-in-one.module` | 🎯 Tổng hợp tất cả | [Cài vào SR](shadowrocket://install?module=https://raw.githubusercontent.com/vanhytt/locket_pro/main/shadowrocket-modules/all-in-one.module) |
 
 > 💡 **Tip:** Nhấn **"Cài vào SR"** trực tiếp trên iPhone để tự động mở Shadowrocket và cài module!
 
@@ -60,7 +60,7 @@ shadowrocket-modules/
 Nhấn vào link **"Cài vào SR"** trong bảng trên → Shadowrocket tự động mở và cài.
 
 ### Cách 2: Thêm bằng URL thủ công
-1. Copy Raw URL của module (ví dụ: `https://raw.githubusercontent.com/vanhytt/locket_pro/main/locket.module`)
+1. Copy Raw URL của module (ví dụ: `https://raw.githubusercontent.com/vanhytt/locket_pro/main/shadowrocket-modules/locket.module`)
 2. Mở **Shadowrocket** → **Configuration** → **Module**
 3. Nhấn **+** → Dán URL → Nhấn **OK**
 4. Bật VPN với kiểu kết nối **Cấu Hình**
