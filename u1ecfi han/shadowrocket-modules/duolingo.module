@@ -1,0 +1,34 @@
+#!name=Super Duolingo Unlock
+#!desc=Mở khóa Super Duolingo — không quảng cáo, tâm trí vô hạn, luyện tập nâng cao
+#!author=Adapted from dhungx
+#!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Duolingo.png
+# ─────────────────────────────────────────────────
+# ⚠️ Cảnh báo:
+# - Có thể không hoạt động nếu Duolingo đã fix bằng TLS Pinning
+# - Thử đăng xuất & đăng nhập lại nếu không có hiệu lực
+# - Kiểm tra log Shadowrocket nếu module không hoạt động
+# ─────────────────────────────────────────────────
+# Cách hoạt động:
+# 1. [General] force-http-engine-hosts → bypass một phần pinning
+# 2. [Rule] route toàn bộ *.duolingo.com qua Proxy
+# 3. [Script] modify response JSON: gán isSuper=true, subscription active
+# ─────────────────────────────────────────────────
+
+[General]
+# Buộc dùng HTTP engine để MITM có thể giải mã TLS
+force-http-engine-hosts = *duolingo.com
+
+[Rule]
+# Route app qua proxy để MITM hoạt động
+DOMAIN-SUFFIX,duolingo.com,Proxy
+DOMAIN-SUFFIX,duolingo.cn,Proxy
+DOMAIN-SUFFIX,duolingo.eu,Proxy
+DOMAIN-SUFFIX,duolingo.io,Proxy
+DOMAIN-SUFFIX,duolingo.tech,Proxy
+
+[Script]
+# Modify user data response: gán subscription Super active
+super_unlock = type=http-response, pattern=^https:\/\/(ios-api-2|goals-api|ios-api-cf)\.duolingo\.com\/.*users.*, requires-body=true, max-size=-1, timeout=60, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/shadowrocket-modules/js/duolingo/super.js
+
+[MITM]
+hostname = %APPEND% ios-api-2.duolingo.com, goals-api.duolingo.com, ios-api-cf.duolingo.com

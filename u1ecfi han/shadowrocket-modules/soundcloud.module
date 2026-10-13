@@ -1,0 +1,16 @@
+#!name=SoundCloud Go+ Unlock
+#!desc=Mở khóa SoundCloud Go+ — nghe offline, không quảng cáo, âm thanh cao cấp
+#!author=Adapted from dhungx
+#!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/SoundCloud.png
+# ─────────────────────────────────────────────────
+# Cách hoạt động:
+# - Intercept API configuration của iOS app
+# - Replace plan thành high_tier (Go+)
+# - Bật các feature: offline_sync, no_audio_ads, hq_audio
+# ─────────────────────────────────────────────────
+
+[MITM]
+hostname = %APPEND% api-mobile.soundcloud.com
+
+[Script]
+SoundCloudGo+ = type=http-response, pattern=^https://api-mobile\.soundcloud\.com/configuration/ios, requires-body=1, max-size=-1, timeout=60, script-path=https://raw.githubusercontent.com/vanhytt/locket_pro/main/shadowrocket-modules/js/soundcloud/soundcloud.js
